@@ -3,34 +3,36 @@
 
 {% block content %}
 
- <div class="row">
-     <div class="col-sm-6"><h2>{{ profile.firstName }}  {{ profile.lastName }}</h2></div>
-      <div class="col-sm-6"><form action="/delete_profile/{{ profile.id }}" method="post">
-        <input type="submit" value="Delete" action="/delete_profile/{{ profile.id }}" method="post" class="btn btn-danger" role="button"/>
-     </form>
-          </div>
- </div>
-
- <img src="/static/images/pb.jpg" width="150"/>
-
-   <div class="panel-group">
-    <div class="panel panel-info">
-      <div class="panel-heading">First Name:</div>
-      <div class="panel-body">{{ profile.firstName }}</div>
-    </div>
-    <div class="panel panel-info">
-      <div class="panel-heading">Last Name:</div>
-      <div class="panel-body">{{ profile.lastName }}</div>
-    </div>
-    <div class="panel panel-info">
-      <div class="panel-heading">Email address:</div>
-      <div class="panel-body">{{ profile.email }}</div>
+    <div class="row">
+        <div class="col-sm-6"><h2>{{ profile.firstName }} {{ profile.lastName }}</h2></div>
+        <div class="col-sm-6">
+            <form action="/delete_profile/{{ profile.id }}" method="post">
+                <input type="submit" value="Delete" action="/delete_profile/{{ profile.id }}" method="post"
+                       class="btn btn-danger" role="button"/>
+            </form>
+        </div>
     </div>
 
-       <div class="panel panel-info">
-      <div class="panel-heading">Biography:</div>
-      <div class="panel-body">{{ profile.bio }}</div>
-    </div>
+    <img src="/static/images/pb.jpg" width="150"/>
+
+    <div class="panel-group">
+        <div class="panel panel-info">
+            <div class="panel-heading">First Name:</div>
+            <div class="panel-body">{{ profile.firstName }}</div>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">Last Name:</div>
+            <div class="panel-body">{{ profile.lastName }}</div>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">Email address:</div>
+            <div class="panel-body">{{ profile.email }}</div>
+        </div>
+
+        <div class="panel panel-info">
+            <div class="panel-heading">Biography:</div>
+            <div class="panel-body">{{ profile.bio }}</div>
+        </div>
 
 
 {% endblock %}

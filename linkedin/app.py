@@ -1,13 +1,11 @@
-from flask import Flask, render_template, request, session, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash
 import json
-from datetime import timedelta
-from db import db, UserProfile
-from users import Users
+from db import db, UserProfileTable
 from flask_caching import Cache
+from session import Session
 
 
 def create_app(config=None):
-
     app = Flask(__name__)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/my.db'
@@ -16,27 +14,14 @@ def create_app(config=None):
 
     db.init_app(app)
 
-    cache = Cache(config={'CACHE_TYPE': 'simple',
-                          'CACHE_THRESHOLD':100})
+    cache = Cache(config={'CACHE_TYPE': 'redis',
+                          'CACHE_THRESHOLD': 100})
     cache.init_app(app)
 
-    users = Users()
-
-    # set session timeout to be 30 seconds of inactivity
-    @app.before_request
-    def make_session_permanent():
-        session.permanent = True
-        app.permanent_session_lifetime = timedelta(minutes=5)
+    session = Session(cache)
 
     @app.route('/')
     def index():
-
-        # if 'logged_in' in session:
-        #     # fetch top most searched profiles and show them
-        #     top_searched = UserProfile.query_top_searched(5)
-        #
-        #     return render_template('index.html',top_profiles=top_searched)
-        # else:
         return render_template('index.html')
 
     @app.route('/login', methods=['GET', 'POST'])
@@ -44,11 +29,7 @@ def create_app(config=None):
         if request.method == 'POST':
             username = request.form['username']
 
-            user_id = users.add_user(username)
-
-            session['username'] = username
-            session['user_id'] = user_id
-            session['logged_in'] = True
+            session.login(username)
 
             return redirect(url_for('index'))
 
@@ -56,14 +37,11 @@ def create_app(config=None):
 
     @app.route('/logout')
     def logout():
-        # remove the username from the session if it's there
-        session.pop('logged_in', None)
-        session.pop('username', None)
-        session.pop('user_id', None)
 
+        session.logout()
         return redirect(url_for('index'))
 
-    @app.route('/add_profile',methods=['GET','POST'])
+    @app.route('/add_profile', methods=['GET', 'POST'])
     def add_profile():
         if request.method == 'POST':
 
@@ -72,15 +50,16 @@ def create_app(config=None):
             email = request.form['email']
             bio = request.form['bio']
 
-            print 'Adding {0} {1} {2}'.format(first_name, last_name, email)
-            new_profile = UserProfile(firstName=first_name, lastName=last_name, email=email, bio=bio)
+            new_profile = UserProfileTable(firstName=first_name, lastName=last_name, email=email, bio=bio)
 
-            if UserProfile.profile_exists(new_profile):
+            if UserProfileTable.profile_exists(new_profile):
                 flash("Profile with same first and last name already exists")
                 return redirect(url_for('add_profile'))
 
             else:
-                UserProfile.add_profile(new_profile)
+                UserProfileTable.add_profile(new_profile)
+                cache.delete_memoized(search_db)
+
                 flash("Profile added successfully")
 
                 return show_profile(id=new_profile.id)
@@ -90,7 +69,7 @@ def create_app(config=None):
     @app.route('/show_profile/<id>')
     def show_profile(id=None):
         if id:
-            user_profile = UserProfile.query.get(id)
+            user_profile = UserProfileTable.query.get(id)
             return render_template('show_profile.html', profile=user_profile)
         else:
             return 'Profile not found'
@@ -99,33 +78,42 @@ def create_app(config=None):
     def delete_profile(id=None):
 
         # check is user is an admin
-        if 'user_id' in session and users.check_delete_permissions(session['user_id']):
+        if session.check_admin_permissions():
 
-            profile = UserProfile.delete_profile(id)
+            profile = UserProfileTable.delete_profile(id)
 
+            cache.delete_memoized(search_db)
             flash("Profile for {0} {1} was succesfully deleted.".format(profile.firstName, profile.lastName))
             return redirect(url_for('index'))
 
         else:
-            flash("You don't have permission to delete profiles")
+            flash("You don't have permission to delete profile {0} ".format( session.get_username()))
+
             return redirect(url_for('show_profile', id=id))
 
     @app.route('/search', methods=['GET', 'POST'])
-    @cache.cached()
     def search():
         if request.method == 'POST':
             search_str = request.form['search']
 
-            try:
-                search_obj = json.loads(search_str)
-                all_results = UserProfile.search(search_obj)
-
-            except ValueError, e:
-                all_results = UserProfile.search_simple(search_str)
-
-            return render_template('search_results.html', results=all_results)
+            results = search_db(search_str)
+            return render_template('search_results.html', results=results)
         else:
             return render_template('search.html')
+
+    @cache.memoize()
+    def search_db(search_str):
+        try:
+            search_obj = json.loads(search_str)
+            return UserProfileTable.search(search_obj)
+
+        except ValueError, e:
+            return UserProfileTable.search_simple(search_str)
+
+    @app.before_request
+    def make_session_permanent():
+        # set session timeout to be 60 seconds of inactivity
+        session.update_ttl(app)
 
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 

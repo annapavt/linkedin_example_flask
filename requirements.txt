@@ -1,15 +1,9 @@
-Flask==0.12.1
-sqlalchemy
+Flask
 Flask-SQLAlchemy
-flask-restful
 names
-Flask-Session
 loremipsum
 gunicorn
 Flask-Caching
-
-# Testing and static analysis.
 pytest
-
-
 redis
+locustio

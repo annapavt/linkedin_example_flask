@@ -12,9 +12,8 @@ def app():
     """
 
     config = {
-        'SERVER_NAME':'localhost',
-        'SQLALCHEMY_DATABASE_URI':'sqlite:////tmp/mytest.db'
-
+        'SERVER_NAME': 'localhost',
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:////tmp/mytest.db'
     }
 
     init_db(config)

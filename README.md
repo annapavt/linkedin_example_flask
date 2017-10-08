@@ -12,16 +12,18 @@ Installation
 
 To install the app on your machine:
 
+virtualenv venv
+source venv/bin/activate
+
 pip install -r requirements.txt
 
 Install redis on mac:
 
 brew install redis
 
+
 Execution
 =================
-
-
 
 First start the database and generate some dummy data:
 
@@ -39,6 +41,15 @@ Now go to: http://localhost:5000
 
 Voila!
 
+Gunicorn
+=================
+To run the app on 2 gunicron servers:
+
+unicorn "linkedin.app:create_app()" -b 0.0.0.0:8000 -w 2
+
+Now go to: http://localhost:8000
+
+Voila!
 
 Tests
 =================

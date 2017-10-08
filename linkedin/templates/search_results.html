@@ -6,7 +6,8 @@
     <h1>Search Results</h1>
     <div class="list-group">
         {% for result in results %}
-            <a href="/show_profile/{{ result.id }}" class="list-group-item">{{ result.firstName }} {{ result.lastName }}</a>
+            <a href="/show_profile/{{ result.id }}"
+               class="list-group-item">{{ result.firstName }} {{ result.lastName }}</a>
         {% endfor %}
     </div>
 {% endblock %}

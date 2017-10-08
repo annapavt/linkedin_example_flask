@@ -2,7 +2,7 @@ from linkedin.app import create_app
 from linkedin.app import db
 from loremipsum import generate_paragraph
 import names
-from db import UserProfile
+from db import UserProfileTable
 
 
 def init_db(config=None):
@@ -12,8 +12,8 @@ def init_db(config=None):
         db.drop_all()
         db.create_all()
 
-    for i in range(0, 100):
-        p = UserProfile(firstName=names.get_first_name(), lastName=names.get_last_name())
+    for i in range(0, 200):
+        p = UserProfileTable(firstName=names.get_first_name(), lastName=names.get_last_name())
         p.email = '{0}_{1}@gmail.com'.format(p.firstName, p.lastName).lower()
 
         sentences_count, words_count, paragraph = generate_paragraph()
