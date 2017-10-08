@@ -1,0 +1,12 @@
+{
+  "venv/lib/python2.7/site-packages/setuptools/tests/test_egg_info.py": true, 
+  "venv/lib/python2.7/site-packages/sqlalchemy/testing/suite/test_ddl.py": true, 
+  "venv/lib/python2.7/site-packages/sqlalchemy/testing/suite/test_dialect.py": true, 
+  "venv/lib/python2.7/site-packages/sqlalchemy/testing/suite/test_insert.py": true, 
+  "venv/lib/python2.7/site-packages/sqlalchemy/testing/suite/test_reflection.py": true, 
+  "venv/lib/python2.7/site-packages/sqlalchemy/testing/suite/test_results.py": true, 
+  "venv/lib/python2.7/site-packages/sqlalchemy/testing/suite/test_select.py": true, 
+  "venv/lib/python2.7/site-packages/sqlalchemy/testing/suite/test_sequence.py": true, 
+  "venv/lib/python2.7/site-packages/sqlalchemy/testing/suite/test_types.py": true, 
+  "venv/lib/python2.7/site-packages/sqlalchemy/testing/suite/test_update_delete.py": true
+}

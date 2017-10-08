@@ -1,0 +1,25 @@
+<!doctype html>
+{% extends 'base.html' %}
+
+{% block content %}
+{% if not session.logged_in %}
+
+       <h1> Welcome , please log in </h1>
+
+       <a href="{{ url_for('login') }}" methods="post" class="btn btn-info" role="button">Log In</a>
+  {% else %}
+        {%  if top_profiles %}
+       <h1> Most popular profiles </h1>
+       <div class="list-group">
+        {% for result in top_profiles %}
+            <a href="/show_profile/{{ result.id }}" class="list-group-item">{{ result.firstName }} {{ result.lastName }}  <span class="badge">{{ result.search_count }}</span></a>
+
+        {% endfor %}
+        </div>
+        {% endif %}
+
+  {% endif %}
+{% endblock %}
+
+
+

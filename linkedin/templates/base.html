@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <title>My LinkedIn</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse">
+   <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">MyLinkedIn</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/">Home</a></li>
+      <li><a href="/add_profile">Add Profile</a></li>
+      <li><a href="/search">Search</a></li>
+
+       {% if not session.logged_in %}
+           <li>
+           <form action="/login" class="navbar-form navbar-left">
+             <input type="submit" value="Log In" class="btn btn-info" role="button" />
+
+            </form>
+           </li>
+      {% else %}
+           <li>
+            <form action="/logout" class="navbar-form navbar-left">
+             <input type="submit" value="Log Out" class="btn btn-warning" role="button" />
+
+            </form>
+           </li>
+          <li>
+              <h4><span class="label label-default">{{ session.username  }}</span></h4>
+          </li>
+      {% endif %}
+       </ul>
+  </div>
+  </nav>
+
+
+  {% with messages = get_flashed_messages() %}
+         {% if messages %}
+            <ul>
+               {% for message in messages %}
+                   <div class="alert alert-warning">
+                        {{ message }}
+                    </div>
+               {% endfor %}
+            </ul>
+         {% endif %}
+  {% endwith %}
+<ul>
+   {% block content %}{% endblock %}
+</ul>
+</body>
+</html>
