@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import json
-from db import db, UserProfileTable
+from db import SqlDB
 from flask_caching import Cache
 from session import Session
 
@@ -12,9 +12,17 @@ def create_app(config=None):
     app.config['DEBUG'] = True
     app.config.update(config or {})
 
+    if 'db' in app.config:
+        db = app.config['db']
+    else:
+        db = SqlDB()
+
     db.init_app(app)
 
-    cache = Cache(config={'CACHE_TYPE': 'redis',
+    if config and 'cache' in config:
+        cache = config['cache']
+    else:
+        cache = Cache(config={'CACHE_TYPE': 'redis',
                           'CACHE_THRESHOLD': 100})
     cache.init_app(app)
 
@@ -50,14 +58,14 @@ def create_app(config=None):
             email = request.form['email']
             bio = request.form['bio']
 
-            new_profile = UserProfileTable(firstName=first_name, lastName=last_name, email=email, bio=bio)
+            new_profile = db.create_profile(first_name, last_name, bio, email)
 
-            if UserProfileTable.profile_exists(new_profile):
+            if db.profile_exists(new_profile):
                 flash("Profile with same first and last name already exists")
                 return redirect(url_for('add_profile'))
 
             else:
-                UserProfileTable.add_profile(new_profile)
+                db.add_profile(new_profile)
                 cache.delete_memoized(search_db)
 
                 flash("Profile added successfully")
@@ -69,7 +77,7 @@ def create_app(config=None):
     @app.route('/show_profile/<id>')
     def show_profile(id=None):
         if id:
-            user_profile = UserProfileTable.query.get(id)
+            user_profile = db.get_profile(id)
             return render_template('show_profile.html', profile=user_profile)
         else:
             return 'Profile not found'
@@ -80,14 +88,14 @@ def create_app(config=None):
         # check is user is an admin
         if session.check_admin_permissions():
 
-            profile = UserProfileTable.delete_profile(id)
+            profile = db.delete_profile(id)
 
             cache.delete_memoized(search_db)
             flash("Profile for {0} {1} was succesfully deleted.".format(profile.firstName, profile.lastName))
             return redirect(url_for('index'))
 
         else:
-            flash("You don't have permission to delete profile {0} ".format( session.get_username()))
+            flash("You don't have permission to delete profile {0} ".format(session.get_username()))
 
             return redirect(url_for('show_profile', id=id))
 
@@ -97,18 +105,21 @@ def create_app(config=None):
             search_str = request.form['search']
 
             results = search_db(search_str)
-            return render_template('search_results.html', results=results)
+
+            if results is None:
+                results = []
+            return render_template('search.html', results=results, search_str=search_str)
         else:
-            return render_template('search.html')
+            return render_template('search.html', search_str="John")
 
     @cache.memoize()
     def search_db(search_str):
         try:
             search_obj = json.loads(search_str)
-            return UserProfileTable.search(search_obj)
+            return db.search(search_obj)
 
         except ValueError, e:
-            return UserProfileTable.search_simple(search_str)
+            return db.search_simple(search_str)
 
     @app.before_request
     def make_session_permanent():

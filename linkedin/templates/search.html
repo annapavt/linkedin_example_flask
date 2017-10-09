@@ -7,10 +7,23 @@
     <form action="/search" method="post">
         <div class="form-group">
             <label for="search">Search</label>
-            <input type="search" class="form-control" name="search" value="John Doe">
+            <input type="search" class="form-control" name="search" value='{{ search_str }}'/>
 
         </div>
         <input type="submit" value="Go!" class="btn btn-info" role="button">
     </form>
+     {% if results %}
+        <h3>Search Results  <span class="badge">{{ results|length }}</span></h3>
+
+        <div class="list-group">
+            {% for result in results %}
+                <a href="/show_profile/{{ result.id }}"
+                   class="list-group-item">{{ result.firstName }} {{ result.lastName }}</a>
+            {% endfor %}
+        </div>
+
+        {% else %}
+
+    {% endif %}
 
 {% endblock %}

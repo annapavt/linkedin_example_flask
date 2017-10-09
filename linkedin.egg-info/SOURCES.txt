@@ -3,10 +3,14 @@ linkedin/__init__.py
 linkedin/app.py
 linkedin/db.py
 linkedin/init_db.py
+linkedin/model.py
+linkedin/session.py
+linkedin/settings.py
 linkedin.egg-info/PKG-INFO
 linkedin.egg-info/SOURCES.txt
 linkedin.egg-info/dependency_links.txt
 linkedin.egg-info/top_level.txt
 tests/__init__.py
 tests/conftest.py
+tests/locust_test.py
 tests/test_app.py

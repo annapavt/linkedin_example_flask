@@ -2,6 +2,9 @@ import pytest
 
 from linkedin.app import create_app
 from linkedin.init_db import init_db
+from linkedin.db import FakeDB
+from flask_caching import Cache
+
 
 @pytest.yield_fixture(scope='session')
 def app():
@@ -13,10 +16,13 @@ def app():
 
     config = {
         'SERVER_NAME': 'localhost',
-        'SQLALCHEMY_DATABASE_URI': 'sqlite:////tmp/mytest.db'
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:////tmp/mytest.db',
+        'cache': Cache(config={'CACHE_TYPE': 'simple',
+                          'CACHE_THRESHOLD': 100}),
+        'db': FakeDB()
     }
 
-    init_db(config)
+    init_db(config, 100)
     _app = create_app(config)
 
     # Establish an application context before running the tests.
