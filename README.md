@@ -27,15 +27,16 @@ Execution
 
 First start the database and generate some dummy data:
 
- python -m linkedin.init_db
+      python -m linkedin.init_db
 
 Start redis for caching :
-redis-server /usr/local/etc/redis.conf
+
+      redis-server /usr/local/etc/redis.conf
 
 
 To run the app on 2 gunicorn servers:
 
-gunicorn "linkedin.app:create_app()" -b 0.0.0.0:8000 -w 2
+      gunicorn "linkedin.app:create_app()" -b 0.0.0.0:8000 -w 2 
 
 Now go to: http://localhost:8000
 
@@ -48,11 +49,11 @@ The app is tested using pytest.
 
 To run the tests:
 
-    py.test tests
+      py.test tests
 
 
 Locust scale and performance tests
 ===================================
 
-locust -f tests/locust_test.py --host=http://localhost:8000
+      locust -f tests/locust_test.py --host=http://localhost:8000
 
