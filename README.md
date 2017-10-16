@@ -32,24 +32,15 @@ First start the database and generate some dummy data:
 Start redis for caching :
 redis-server /usr/local/etc/redis.conf
 
-To run the app:
 
- python -m linkedin.app
-
-
-Now go to: http://localhost:5000
-
-Voila!
-
-Gunicorn
-=================
-To run the app on 2 gunicron servers:
+To run the app on 2 gunicorn servers:
 
 unicorn "linkedin.app:create_app()" -b 0.0.0.0:8000 -w 2
 
 Now go to: http://localhost:8000
 
 Voila!
+
 
 Tests
 =================
@@ -58,3 +49,10 @@ The app is tested using pytest.
 To run the tests:
 
     py.test tests
+
+
+Locust scale and performance tests
+===================================
+
+locust -f tests/locust_test.py --host=http://localhost:8000
+
