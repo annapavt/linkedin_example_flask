@@ -35,7 +35,7 @@ redis-server /usr/local/etc/redis.conf
 
 To run the app on 2 gunicorn servers:
 
-unicorn "linkedin.app:create_app()" -b 0.0.0.0:8000 -w 2
+gunicorn "linkedin.app:create_app()" -b 0.0.0.0:8000 -w 2
 
 Now go to: http://localhost:8000
 
